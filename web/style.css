@@ -1,0 +1,270 @@
+@import url("https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap");
+
+:root {
+  --row-height: 25pt;
+  --node-size: 21pt;
+  --font-active: 14.5pt;
+  --font-idle: 11.5pt;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 1), 0 2px 10px rgba(0, 0, 0, 0.9);
+}
+
+body {
+  visibility: hidden;
+  user-select: none;
+  white-space: nowrap;
+  margin: 0;
+  overflow: hidden;
+  font-family: "Archivo", "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+#reticle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: opacity 160ms var(--ease), transform 220ms var(--ease);
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.9));
+}
+
+#reticle.has-target {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.6);
+}
+
+.reticle-ring {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.75);
+  stroke-width: 1.4;
+}
+
+.reticle-core {
+  fill: rgba(255, 255, 255, 0.9);
+}
+
+p {
+  margin: 0;
+}
+
+#options-wrapper.is-dense {
+  --row-height: 18pt;
+  --node-size: 16pt;
+  --font-active: 11pt;
+  --font-idle: 9.5pt;
+}
+
+#options-wrapper {
+  position: absolute;
+  top: 50%;
+  left: calc(50% - var(--node-size) / 2);
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.rail {
+  position: absolute;
+  left: calc(var(--node-size) / 2 - 0.5px);
+  top: calc(var(--row-height) / 2);
+  bottom: calc(var(--row-height) / 2);
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.5) 18%,
+    rgba(255, 255, 255, 0.5) 82%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  pointer-events: none;
+}
+
+.rail.is-empty {
+  display: none;
+}
+
+.option {
+  position: relative;
+  height: var(--row-height);
+  color: #a7abb4;
+  cursor: pointer;
+  opacity: 1;
+  transition: color 180ms var(--ease), opacity 200ms var(--ease);
+}
+
+.option-body {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 100%;
+  padding-right: 22pt;
+  opacity: 0;
+  transform: translateX(-6pt);
+  animation: option-in 260ms var(--ease) forwards;
+  animation-delay: calc(var(--i) * 28ms);
+}
+
+@keyframes option-in {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.option-body::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 calc(var(--node-size) / 2);
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.72) 0%,
+    rgba(0, 0, 0, 0.72) calc(100% - 20pt),
+    rgba(0, 0, 0, 0) 100%
+  );
+  opacity: 0.45;
+  transition: opacity 180ms var(--ease);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.option.is-active .option-body::before {
+  opacity: 1;
+}
+
+.option.is-active .option-label {
+  color: #ffffff;
+}
+
+.option-node {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 var(--node-size);
+  width: var(--node-size);
+  height: var(--node-size);
+}
+
+.node-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5pt;
+  height: 5pt;
+  margin: -2.5pt 0 0 -2.5pt;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.95);
+  transition: opacity 160ms var(--ease), transform 200ms var(--ease);
+}
+
+.node-cross {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--node-size);
+  height: var(--node-size);
+  transform: translate(-50%, -50%) scale(0.5);
+  opacity: 0;
+  transition: opacity 180ms var(--ease), transform 220ms var(--ease);
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.9));
+}
+
+.node-cross circle {
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 1.6;
+}
+
+.node-cross path {
+  stroke: #ffffff;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+}
+
+.option[data-side="up"] .node-dot {
+  background: transparent;
+  border: 1.2px solid rgba(255, 255, 255, 0.75);
+  width: 6pt;
+  height: 6pt;
+  margin: -3pt 0 0 -3pt;
+}
+
+.option.is-active .node-dot {
+  opacity: 0;
+  transform: scale(0.4);
+}
+
+.option.is-active .node-cross {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.option-badges {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 3pt;
+  margin-left: 3.6pt;
+  margin-right: 5.5pt;
+}
+
+.option-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16pt;
+  height: 16pt;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.24);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  transition: background 180ms var(--ease), transform 200ms var(--ease);
+}
+
+.option-badge.is-colored {
+  background: var(--badge);
+}
+
+.option-badge i {
+  font-size: 8pt;
+  color: #ffffff;
+}
+
+.option-label {
+  position: relative;
+  z-index: 1;
+  font-size: var(--font-idle);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-shadow: var(--shadow);
+  transition: font-size 180ms var(--ease), color 180ms var(--ease);
+}
+
+.option.is-active {
+  color: #ffffff;
+  opacity: 1;
+}
+
+.option.is-active .option-label {
+  font-size: var(--font-active);
+  font-weight: 700;
+}
+
+.option.is-active .option-badge {
+  transform: scale(1.08);
+}
+
+.option[data-dist="1"] {
+  opacity: 0.94;
+}
+
+.option[data-dist="2"] {
+  opacity: 0.84;
+}
+
+.option[data-dist="3"] {
+  opacity: 0.72;
+}
